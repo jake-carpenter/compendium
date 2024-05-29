@@ -5,3 +5,4 @@ Collection of code snippets, examples, patterns, architectures and projects I've
 ## Table of Contents
 
 - [Global.json Examples](./dotnet/global-json-examples/README.md)
+- [Generating C# OpenAPI clients with NSwag](./dotnet/generate-client-with-nswag/README.md)
