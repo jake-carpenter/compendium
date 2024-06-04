@@ -1,0 +1,32 @@
+{
+  "descriptionHash": "91EDE4A9D02D08E8B80560F620FAAE2C6711C71A41BD8BA1C962D7758661C74F9803D6A8BB1F5B5B3D91B058371CA5D384B04458F10C6D4C87D7485D33D1AE81",
+  "descriptionLocation": "../server.json",
+  "lockFileVersion": "1.0.0",
+  "kiotaVersion": "1.14.0",
+  "clientClassName": "Client",
+  "clientNamespaceName": "CSharpConsumer",
+  "language": "CSharp",
+  "usesBackingStore": false,
+  "excludeBackwardCompatible": true,
+  "includeAdditionalData": true,
+  "serializers": [
+    "Microsoft.Kiota.Serialization.Json.JsonSerializationWriterFactory",
+    "Microsoft.Kiota.Serialization.Text.TextSerializationWriterFactory",
+    "Microsoft.Kiota.Serialization.Form.FormSerializationWriterFactory",
+    "Microsoft.Kiota.Serialization.Multipart.MultipartSerializationWriterFactory"
+  ],
+  "deserializers": [
+    "Microsoft.Kiota.Serialization.Json.JsonParseNodeFactory",
+    "Microsoft.Kiota.Serialization.Text.TextParseNodeFactory",
+    "Microsoft.Kiota.Serialization.Form.FormParseNodeFactory"
+  ],
+  "structuredMimeTypes": [
+    "application/json",
+    "text/plain;q=0.9",
+    "application/x-www-form-urlencoded;q=0.2",
+    "multipart/form-data;q=0.1"
+  ],
+  "includePatterns": [],
+  "excludePatterns": [],
+  "disabledValidationRules": []
+}
