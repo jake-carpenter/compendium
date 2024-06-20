@@ -6,3 +6,6 @@ Collection of code snippets, examples, patterns, architectures and projects I've
 
 - [Global.json Examples](./dotnet/global-json-examples/README.md)
 - [Generating C# OpenAPI clients with NSwag](./dotnet/generate-client-with-nswag/README.md)
+- [Generating C# OpenAPI clients with Kiota](./dotnet/generate-client-with-kiota/README.md)
+- [A few STJ JsonConverter implementations for minimizing decimal length](./dotnet/decimal-minlength-serializer/README.md)
+- [Testing UUID generation/sorting in C# and databases](./dotnet/uuidv7-with-db/README.md)
