@@ -6,6 +6,7 @@ public class TestRunner(IEnumerable<ITestCase> testCases)
     {
         foreach (var test in testCases)
         {
+            await test.Repo.Prepare();
             var records = test.Generate(count).ToArray();
             await test.Repo.Write(records);
 
