@@ -2,12 +2,12 @@ namespace Project;
 
 public class TestRunner(IEnumerable<BaseTestCase> testCases)
 {
-    public async Task Execute(int count, TimeSpan minDelay, TimeSpan maxDelay)
+    public async Task Execute(Settings settings)
     {
         foreach (var test in testCases)
         {
             await test.Repo.Prepare();
-            var records = await test.Generate(count, minDelay, maxDelay);
+            var records = await test.Generate(settings);
             var sorted = records.Select(x => Guid.Parse(x.Uuid)).OrderBy(x=>x).ToArray();
             await test.Repo.Write(records);
 

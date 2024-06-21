@@ -6,13 +6,13 @@ public abstract class BaseTestCase
     public abstract string Label { get; }
     protected abstract Guid CreateUuid();
 
-    public async Task<Record[]> Generate(int count, TimeSpan minDelay, TimeSpan maxDelay)
+    public async Task<Record[]> Generate(Settings settings)
     {
-        var min = (int)Math.Floor(minDelay.TotalMilliseconds);
-        var max = (int)Math.Ceiling(maxDelay.TotalMilliseconds);
+        var min = (int)Math.Floor(settings.MinimumDelay.TotalMilliseconds);
+        var max = (int)Math.Ceiling(settings.MaximumDelay.TotalMilliseconds);
         var random = new Random();
 
-        var records = new Record[count];
+        var records = new Record[settings.Count];
         for (var i = 0; i < records.Length; i++)
         {
             var id = i + 1;
