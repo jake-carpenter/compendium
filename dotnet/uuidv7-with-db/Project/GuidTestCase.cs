@@ -1,18 +1,12 @@
 namespace Project;
 
-public class GuidTestCase(MsSqlRepo repo) : ITestCase
+public class GuidTestCase(MsSqlRepo repo) : BaseTestCase
 {
-    public string Label => "GUID (UUIDv4)";
+    public override string Label => "GUID (UUIDv4)";
+    public override IRepo Repo => repo;
 
-    public IRepo Repo => repo;
-
-    public IEnumerable<Record> Generate(int count)
+    protected override Guid CreateUuid()
     {
-        return Enumerable
-            .Range(1, count)
-            .Select(_ => Guid.NewGuid())
-            .OrderBy(uuid => uuid)
-            .Select((uuid, id) => new Record(id, uuid))
-            .ToArray();
+        return Guid.NewGuid();
     }
 }
