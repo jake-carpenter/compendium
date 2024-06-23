@@ -7,6 +7,9 @@ public class MsSqlSorter(string connectionString) : ISorter
 {
     public string Label => "MSSQL Sorted";
 
+    public UuidSection[] HighlightedSections =>
+        [UuidSection.Node, UuidSection.ClockSeqAndReserved, UuidSection.ClockSeqLow];
+
     public async Task<Record[]> Sort(IEnumerable<Record> records)
     {
         await Prepare();
