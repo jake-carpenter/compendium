@@ -3,9 +3,19 @@ using Microsoft.Data.SqlClient;
 
 namespace Project;
 
-public class MsSqlRepo(string connectionString) : IRepo
+public class MsSqlSorter(string connectionString) : ISorter
 {
-    public async Task Prepare()
+    public string Label => "MSSQL Sorted";
+
+    public async Task<Record[]> Sort(IEnumerable<Record> records)
+    {
+        await Prepare();
+        await Write(records);
+        var results = await Read();
+        return results.ToArray();
+    }
+
+    private async Task Prepare()
     {
         await using var connection = new SqlConnection(connectionString);
         await connection.ExecuteAsync(
@@ -14,7 +24,7 @@ public class MsSqlRepo(string connectionString) : IRepo
         await connection.ExecuteAsync("truncate table Uuids");
     }
 
-    public async Task Write(IEnumerable<Record> records)
+    private async Task Write(IEnumerable<Record> records)
     {
         await using var connection = new SqlConnection(connectionString);
 
@@ -25,7 +35,7 @@ public class MsSqlRepo(string connectionString) : IRepo
         }
     }
 
-    public async Task<IEnumerable<Record>> Read()
+    private async Task<IEnumerable<Record>> Read()
     {
         await using var connection = new SqlConnection(connectionString);
 

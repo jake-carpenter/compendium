@@ -1,8 +1,7 @@
 namespace Project;
 
-public abstract class BaseTestCase
+public abstract class BaseGenerator
 {
-    public abstract IRepo Repo { get; }
     public abstract string Label { get; }
     protected abstract Guid CreateUuid();
 

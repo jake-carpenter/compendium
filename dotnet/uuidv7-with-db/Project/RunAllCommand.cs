@@ -11,18 +11,10 @@ public class RunAllCommand : AsyncCommand<Settings>
         const string connectionString =
             "TrustServerCertificate=True;Data Source=localhost,9987;User Id=sa;Password=Password123;Database=master";
 
-        var mssqlRepo = new MsSqlRepo(connectionString);
+        BaseGenerator[] generators = [new GuidGenerator(), new UuidV7Generator(),new UuidV8Generator()];
+        ISorter[] sorters = [new CSharpSorter(), new MsSqlSorter(connectionString)];
 
-        BaseTestCase[] testCases =
-        [
-            new GuidTestCase(mssqlRepo),
-            new UuidV7TestCase(mssqlRepo),
-            new UuidV8TestCase(mssqlRepo)
-        ];
-
-        var runner = new TestRunner(testCases);
-
-        await runner.Execute(settings);
+        await new TestRunner(generators, sorters).Execute(settings);
         return 0;
     }
 }

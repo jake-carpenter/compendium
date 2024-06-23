@@ -1,39 +1,34 @@
+using Spectre.Console;
+
 namespace Project;
 
-public class TestRunner(IEnumerable<BaseTestCase> testCases)
+public class TestRunner(BaseGenerator[] generators, ISorter[] sorters)
 {
     public async Task Execute(Settings settings)
     {
-        foreach (var test in testCases)
-        {
-            await test.Repo.Prepare();
-            var records = await test.Generate(settings);
-            var sorted = records.Select(x => Guid.Parse(x.Uuid)).OrderBy(x=>x).ToArray();
-            await test.Repo.Write(records);
-
-            var rows = (await test.Repo.Read()).ToArray();
-
-            Console.WriteLine($"Test: {test.Label}");
-            Console.WriteLine("{0, -8}{1, -38}{2, -38}{3}", "Index", "As Generated", "C# Sorted", "SQL Server Sorted");
-            PrintLine();
-
-            for (var i = 0; i < rows.Length; i++)
-            {
-                Console.Write($"{i,5}   ");
-                Console.Write(records[i].Uuid);
-                Console.Write("  ");
-                Console.Write(sorted[i]);
-                Console.Write("  ");
-                Console.WriteLine(rows[i].Uuid);
-            }
-
-            PrintLine();
-            Console.WriteLine();
-        }
+        var outputWriter = new ConsoleOutputWriter();
+        var results = await GenerateAndSort(settings);
+        await outputWriter.WriteOutput(results);
     }
 
-    private static void PrintLine()
+    private async Task<Results> GenerateAndSort(Settings settings)
     {
-        Console.WriteLine("--------------------------------------------------------------------------------------------------------------------------");
+        var results = new Results();
+
+        foreach (var generator in generators)
+        {
+            AnsiConsole.MarkupLine($"Generating {settings.Count} {generator.Label} records...");
+            var records = await generator.Generate(settings);
+            var generatorRun = new GeneratorRun(generator, records, new List<SorterRun>(sorters.Length));
+            results.Add(generatorRun);
+
+            foreach (var sorter in sorters)
+            {
+                AnsiConsole.MarkupLine($"\tSorting using {sorter.Label}...");
+                generatorRun.SorterRuns.Add(new SorterRun(sorter, await sorter.Sort(records)));
+            }
+        }
+
+        return results;
     }
 }
