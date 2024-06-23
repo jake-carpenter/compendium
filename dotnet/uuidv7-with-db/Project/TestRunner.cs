@@ -13,22 +13,52 @@ public class TestRunner(BaseGenerator[] generators, ISorter[] sorters)
 
     private async Task<Results> GenerateAndSort(Settings settings)
     {
-        var results = new Results();
-
-        foreach (var generator in generators)
-        {
-            AnsiConsole.MarkupLine($"Generating {settings.Count} {generator.Label} records...");
-            var records = await generator.Generate(settings);
-            var generatorRun = new GeneratorRun(generator, records, new List<SorterRun>(sorters.Length));
-            results.Add(generatorRun);
-
-            foreach (var sorter in sorters)
+        PrintStatusHeader(settings);
+        return await AnsiConsole.Progress()
+            .StartAsync(async ctx =>
             {
-                AnsiConsole.MarkupLine($"\tSorting using {sorter.Label}...");
-                generatorRun.SorterRuns.Add(new SorterRun(sorter, await sorter.Sort(records)));
-            }
-        }
+                var results = new Results();
 
-        return results;
+                var incrementValue = 100.0 / settings.Count;
+
+                foreach (var generator in generators)
+                {
+                    var task = ctx.AddTask(FormatProgressLabel(generator.Label));
+                    var records = new List<Record>(settings.Count);
+
+                    await foreach (var record in generator.Generate(settings))
+                    {
+                        task.Increment(incrementValue);
+                        records.Add(record);
+                    }
+
+                    var generatorRun = new GeneratorRun(generator, records, new List<SorterRun>(sorters.Length));
+                    results.Add(generatorRun);
+
+                    foreach (var sorter in sorters)
+                    {
+                        generatorRun.SorterRuns.Add(new SorterRun(sorter, await sorter.Sort(records)));
+                    }
+                }
+
+                return results;
+            });
+    }
+
+    private static void PrintStatusHeader(Settings settings)
+    {
+        const string template =
+            "Generating [yellow]{0}[/] UUIDs each. Delay between [yellow]{1}ms[/] and [yellow]{2}ms[/]";
+
+        var minMs = settings.MinimumDelay.Milliseconds.ToString("N0");
+        var maxMs = settings.MaximumDelay.Milliseconds.ToString("N0");
+        var msg = string.Format(template, settings.Count, minMs, maxMs);
+
+        AnsiConsole.MarkupLine(msg);
+    }
+
+    private static string FormatProgressLabel(string label)
+    {
+        return $"{label,-25}";
     }
 }

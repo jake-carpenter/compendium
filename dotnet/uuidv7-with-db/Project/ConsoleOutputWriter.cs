@@ -27,7 +27,7 @@ public class ConsoleOutputWriter
             AnsiConsole.MarkupLine(GetColumnHeaders(sorters));
             PrintLine(sorters.Length);
 
-            for (var i = 0; i < generatorRun.Generated.Length; i++)
+            for (var i = 0; i < generatorRun.Generated.Count; i++)
             {
                 var generatedUuid = generatorRun.Generated[i].Uuid;
                 AnsiConsole.Markup($"[{Color.Uuid}]{i,5}[/]  {generatedUuid}  ");
