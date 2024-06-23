@@ -7,3 +7,12 @@ services:
       - MSSQL_SA_PASSWORD=Password123
     ports:
       - "9987:1433"
+  postgres:
+    image: postgres:latest
+    container_name: uuid-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Password123
+      - POSTGRES_DB=postgres
+    ports:
+      - "9988:5432"

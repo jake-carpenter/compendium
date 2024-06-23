@@ -25,7 +25,7 @@ public class ConsoleOutputWriter
         {
             PrintHeader(generatorRun.Generator.Label);
             AnsiConsole.MarkupLine(GetColumnHeaders(sorters));
-            PrintLine();
+            PrintLine(sorters.Length);
 
             for (var i = 0; i < generatorRun.Generated.Length; i++)
             {
@@ -36,7 +36,7 @@ public class ConsoleOutputWriter
                 PrintEmptyLines();
             }
 
-            PrintLine();
+            PrintLine(sorters.Length);
             PrintEmptyLines();
         }
 
@@ -77,8 +77,24 @@ public class ConsoleOutputWriter
         _ => string.Empty
     };
 
-    private static void PrintEmptyLines(int count = 1) => AnsiConsole.WriteLine(new string('\n', count - 1));
-    private static void PrintLine() => AnsiConsole.MarkupLine($"[{Color.Table}]{GetLineString()}[/]");
+    private static void PrintEmptyLines(int count = 1)
+    {
+        AnsiConsole.WriteLine(new string('\n', count - 1));
+    }
+
+    private static void PrintLine(int sorterCount)
+    {
+        AnsiConsole.Markup($"[{Color.Table}]{new string('-', 5)}[/]");
+
+        var line = new string('-', 36);
+
+        for (var i = 0; i < sorterCount + 1; i++)
+        {
+            AnsiConsole.Markup($"[{Color.Table}]--{line}[/]");
+        }
+
+        AnsiConsole.Write("\n");
+    }
 
     private static string GetColumnHeaders(IEnumerable<ISorter> sorters)
     {
@@ -95,6 +111,4 @@ public class ConsoleOutputWriter
         stringBuilder.Append("[/]");
         return stringBuilder.ToString();
     }
-
-    private static string GetLineString() => new('-', 120);
 }
