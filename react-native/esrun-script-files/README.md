@@ -1,50 +1,91 @@
-# Welcome to your Expo app 👋
+# Using TypeScript script files that include top-level await
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Top-level await is a nightmare in JavaScript. It's a mostly solved problem the the time of writing, but tooling isn't always on board.
 
-## Get started
+## The problem
 
-1. Install dependencies
+Create your TypeScript script as a `.ts` file in `./scripts`
 
-   ```bash
-   npm install
-   ```
+```typescript
+import { readFile } from 'fs/promises'
 
-2. Start the app
+const fileContent = await readFile('./app.json')
+const json = await JSON.parse(fileContent.toString())
 
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+console.log(json)
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+(also add the script in your `package.json`)
 
-## Learn more
+```json
+{
+  "scripts": {
+    "example": "example ./scripts/example.ts"
+  }
+}
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+You should immediately notice that TypeScript is warning you that top-level await can only be used in special circumstances. However, it probably works just fine and TypeScript is just being annoying. You might be tempted to do what it says and start modifying your `tsconfig.json` file, but there are some caveats to be aware of.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## The solution
 
-## Join the community
+We'll need to to use `ESNext` as the target and module option. In the example `tsconfig.json` for this repo (and other Expo projects), it looks like this:
 
-Join our community of developers creating universal apps.
+```json
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+  ],
+}
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+However, the example in this repo extends a standard Expo `tsconfig.json` file that has _some_ of the defaults we need.
+
+```json
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Expo",
+
+  "compilerOptions": {
+    "allowJs": true,
+    "esModuleInterop": true, // This is probably important
+    "jsx": "react-native",
+    "lib": ["DOM", "ESNext"],
+    "moduleResolution": "node",
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "target": "ESNext" // This is important
+  },
+
+  "exclude": ["node_modules", "babel.config.js", "metro.config.js", "jest.config.js"]
+}
+```
+
+So, we also need to specify `"module": "ESNext"` in the `compilerOptions` object and can do so in our own `tsconfig.json`
+
+```json
+{
+// ...
+  "compilerOptions": {
+    // ...
+    "module": "ESNext"
+  }
+}
+```
+
+## What if it still doesn't work?
+
+With all of that, we've told our TypeScript to behave correctly, but your editor may be using a different version of TypeScript. Be sure to switch it's configuration to use your workspace version.
