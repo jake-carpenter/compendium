@@ -10,3 +10,4 @@ Collection of code snippets, examples, patterns, architectures and projects I've
 - [A few STJ JsonConverter implementations for minimizing decimal length](./dotnet/decimal-minlength-serializer/README.md)
 - [Testing UUID generation/sorting in C# and databases](./dotnet/uuidv7-with-db/README.md)
 - [Using esrun for TypeScript scripts with top-level await](./react-native/esrun-script-files/README.md)
+- [Serilog + Elasticsearch in C#](https://github.com/jake-carpenter/serilog-elastic)
